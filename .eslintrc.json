@@ -1,0 +1,42 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 2021,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "ignorePatterns": ["~icons/**/*.jsx"],
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:prettier/recommended",
+      "plugin:react-hooks/recommended",
+      "plugin:import/warnings",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:mdx/recommended"
+    ],
+    "plugins": ["simple-import-sort", "import", "react", "react-hooks", "react-refresh"],
+    "rules": {
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "error",
+      "react-refresh/only-export-components": "warn",
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "warn",
+      "semi": [0, "always"],
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+      "no-unused-vars": "off",
+      "simple-import-sort/exports": "error",
+      "simple-import-sort/imports": [
+        "error",
+        {
+          "groups": [["^@?\\w"], ["^"], ["^\\."], ["^\\u0000"]]
+        }
+      ],
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/explicit-module-boundary-types": 0
+    }
+  }

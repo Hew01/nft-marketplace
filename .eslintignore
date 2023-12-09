@@ -1,0 +1,7 @@
+**/*.js
+node_modules
+build
+/src/auto-imports.d.ts
+/src/vite-env.d.ts
+/*.js
+.eslintcache
