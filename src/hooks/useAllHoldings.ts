@@ -4,7 +4,7 @@ import localforage from 'localforage';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { setNewNftEvent } from '@/redux/globalSlice';
-import database from '@/database/db';
+// import database from '@/database/db';
 
 function useAllHoldings() {
   const [result, setResult] = useState<any[]>([]);
@@ -39,34 +39,34 @@ function useAllHoldings() {
   }, [vaultAllHoldings, newNftEvent]);
 
   // Grabbing all the images from MongoDB
-  const fetchHoldingsOnDB = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      // Assuming 'images' is the name of your MongoDB Atlas collection
-      const imagesCollection = database.getDb().collection('images');
+  // const fetchHoldingsOnDB = useCallback(async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     // Assuming 'images' is the name of your MongoDB Atlas collection
+  //     const imagesCollection = database.getDb().collection('images');
   
-      // Perform a query to retrieve all documents from the 'images' collection
-      const allImages = await imagesCollection.find().toArray();
+  //     // Perform a query to retrieve all documents from the 'images' collection
+  //     const allImages = await imagesCollection.find().toArray();
   
-      // Map the retrieved documents to the 'parsed' array
-      const parsed = allImages.map((imageDocument) => {
-        const itemValue = imageDocument.data;
-        if (typeof itemValue === 'string') {
-          const parsedItem = JSON.parse(itemValue);
-          if (Object.keys(parsedItem).length !== 0) {
-            return parsedItem;
-          }
-        }
-        return null; // Filter out null items
-      }).filter(Boolean); // Remove null items
+  //     // Map the retrieved documents to the 'parsed' array
+  //     const parsed = allImages.map((imageDocument) => {
+  //       const itemValue = imageDocument.data;
+  //       if (typeof itemValue === 'string') {
+  //         const parsedItem = JSON.parse(itemValue);
+  //         if (Object.keys(parsedItem).length !== 0) {
+  //           return parsedItem;
+  //         }
+  //       }
+  //       return null; // Filter out null items
+  //     }).filter(Boolean); // Remove null items
   
-      setResult(parsed);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [newNftEvent]);    
+  //     setResult(parsed);
+  //   } catch (e: any) {
+  //     setError(e.message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [newNftEvent]);    
 
   useEffect(() => {
     if (vaultAllHoldings) {

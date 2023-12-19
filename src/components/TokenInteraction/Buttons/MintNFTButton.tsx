@@ -6,7 +6,7 @@ import { Button, Error } from '../styled'
 import localForage from 'localforage'
 import { useDispatch } from 'react-redux'
 import { setNewNftEvent } from '@/redux/globalSlice'
-import database from '@/database/db'
+// import database from '@/database/db'
 
 interface TokenInterface {
   img: File | null,
@@ -49,44 +49,44 @@ export const MintNFTButton: React.FC<TokenInterface> = ({ img, src, onSuccess })
   }
 
   // MongoDB Database Image Upload
-  const handleCreateOnDB = async () => {
-    try {
-      let value = {
-        image: src,
-        id: tokenId,
-      };
+  // const handleCreateOnDB = async () => {
+  //   try {
+  //     let value = {
+  //       image: src,
+  //       id: tokenId,
+  //     };
   
-      // Convert 'value' to a JSON string
-      let jsonValue = JSON.stringify(value);
+  //     // Convert 'value' to a JSON string
+  //     let jsonValue = JSON.stringify(value);
   
-      // Save to MongoDB Atlas
-      await database.connectToDb(async (error) => {
-        if (error) {
-          console.error('Failed to connect to the database:', error);
-          return;
-        }
+  //     // Save to MongoDB Atlas
+  //     await database.connectToDb(async (error) => {
+  //       if (error) {
+  //         console.error('Failed to connect to the database:', error);
+  //         return;
+  //       }
   
-        const imagesCollection = database.getDb().collection('images');
+  //       const imagesCollection = database.getDb().collection('images');
   
-        // Insert the document into the 'images' collection
-        await imagesCollection.insertOne({ data: jsonValue });
+  //       // Insert the document into the 'images' collection
+  //       await imagesCollection.insertOne({ data: jsonValue });
   
-        console.log('Item was successfully inserted into MongoDB Atlas');
-      });
+  //       console.log('Item was successfully inserted into MongoDB Atlas');
+  //     });
   
-      // Rest of your code remains unchanged
-      var storedValue = await localForage.getItem(`key${tokenId}`);
-      if (storedValue === jsonValue) {
-        console.log('Item was successfully set in localForage');
-      } else {
-        console.log('Failed address set item in localForage');
-      }
-      let parsedValue = JSON.parse(jsonValue);
-      console.log(parsedValue);
-    } catch (error) {
-      console.error('Error in handleCreate:', error);
-    }
-  };
+  //     // Rest of your code remains unchanged
+  //     var storedValue = await localForage.getItem(`key${tokenId}`);
+  //     if (storedValue === jsonValue) {
+  //       console.log('Item was successfully set in localForage');
+  //     } else {
+  //       console.log('Failed address set item in localForage');
+  //     }
+  //     let parsedValue = JSON.parse(jsonValue);
+  //     console.log(parsedValue);
+  //   } catch (error) {
+  //     console.error('Error in handleCreate:', error);
+  //   }
+  // }
 
   const debouncedTokenId = useDebounce(tokenId, 500)
 
