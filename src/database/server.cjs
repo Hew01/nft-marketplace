@@ -47,6 +47,31 @@ app.post('/api/saveImage', async (req, res) => {
   }
 });
 
+app.get('/api/getImages/:tokenId', async (req, res) => {
+  const { tokenId } = req.params;
+
+  try {
+    const modelName = 'Image';
+    const existingModel = mongoose.modelNames().includes(modelName);
+
+    if (!existingModel) {
+      return res.status(404).json({ success: false, error: 'Image not found' });
+    }
+
+    const Image = mongoose.model(modelName);
+    const imageDocument = await Image.findOne({ tokenId });
+
+    if (!imageDocument) {
+      return res.status(404).json({ success: false, error: 'Image not found' });
+    }
+
+    res.status(200).json({ success: true, image: imageDocument.image });
+  } catch (error) {
+    console.error('Error getting image from MongoDB:', error);
+    res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
