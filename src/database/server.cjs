@@ -15,23 +15,26 @@ connectToDatabase();
 // Use cors middleware
 app.use(cors());
 
+const modelName = 'Image';
+let Image;
+
+try {
+  // Check if the model already exists
+  Image = mongoose.model(modelName);
+} catch (error) {
+  // If the model doesn't exist, define it
+  Image = mongoose.model(modelName, {
+    _id: mongoose.Schema.Types.ObjectId,
+    tokenId: Number,
+    image: String,
+  });
+}
+
 // Define an endpoint to save images
 app.post('/api/saveImage', async (req, res) => {
   const { tokenId, image } = req.body;
 
   try {
-    // Check if the model already exists
-    const modelName = 'Image';
-    const existingModel = mongoose.modelNames().includes(modelName);
-
-    if (!existingModel) {
-      // Define the model if it doesn't exist
-      const Image = mongoose.model(modelName, {
-        _id: mongoose.Schema.Types.ObjectId,
-        tokenId: Number,
-        image: String,
-      });
-    }
 
     const Image = mongoose.model(modelName); // Retrieve the model
 
@@ -47,25 +50,25 @@ app.post('/api/saveImage', async (req, res) => {
   }
 });
 
-app.get('/api/getImages/:tokenId', async (req, res) => {
-  const { tokenId } = req.params;
-
+app.get('/api/getImages/:tokenId?', async (req, res) => {
   try {
-    const modelName = 'Image';
-    const existingModel = mongoose.modelNames().includes(modelName);
-
-    if (!existingModel) {
-      return res.status(404).json({ success: false, error: 'Image not found' });
-    }
-
     const Image = mongoose.model(modelName);
-    const imageDocument = await Image.findOne({ tokenId });
 
-    if (!imageDocument) {
-      return res.status(404).json({ success: false, error: 'Image not found' });
+    if (req.params.tokenId) {
+      // If tokenId is specified, retrieve a specific image
+      const imageDocument = await Image.findOne({ tokenId: req.params.tokenId });
+
+      if (!imageDocument) {
+        return res.status(404).json({ success: false, error: 'Image not found' });
+      }
+
+      res.status(200).json({ success: true, image: imageDocument.image });
+    } else {
+      // If tokenId is not specified, retrieve all images
+      const allImages = await Image.find();
+
+      res.status(200).json({ success: true, images: allImages });
     }
-
-    res.status(200).json({ success: true, image: imageDocument.image });
   } catch (error) {
     console.error('Error getting image from MongoDB:', error);
     res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
