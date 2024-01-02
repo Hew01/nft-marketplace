@@ -52,32 +52,54 @@ export const MintNFTButton: React.FC<TokenInterface> = ({ img, src, onSuccess })
 
   const handleCreateOnDB = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/saveImage', {
+      // Fetch the document with the highest ID
+      const response = await fetch('http://localhost:3001/api/getHighestId', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        console.error(`Failed to get the highest ID. Server responded with status ${response.status}`);
+      }
+  
+      const highestIdData = await response.json();
+      let highestId = 1;
+  
+      if (highestIdData.success) {
+        highestId = highestIdData.highestId + 1;
+      }
+  
+      // Use the highest ID for the new document
+      const responseSaveImage = await fetch('http://localhost:3001/api/saveImage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ tokenId, image: src }),
+        body: JSON.stringify({ tokenId: highestId, image: src }),
       });
   
-      if (!response.ok) {
-        // Handle non-successful responses (status codes other than 200)
-        console.error(`Failed to save image. Server responded with status ${response.status}`);
+      if (!responseSaveImage.ok) {
+        console.error(`Failed to save image. Server responded with status ${responseSaveImage.status}`);
         return;
       }
   
-      const data = await response.json();
+      const data = await responseSaveImage.json();
   
       if (data.success) {
         console.log('Image saved successfully!');
       } else {
         console.error('Failed to save image:', data.error);
       }
+
     } catch (error) {
       console.error('Error saving image:', error);
       console.error(error.stack); // Log the stack trace
     }
   };
+  
+  
 
   const debouncedTokenId = useDebounce(tokenId, 500)
 

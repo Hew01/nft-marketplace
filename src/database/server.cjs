@@ -30,6 +30,22 @@ try {
   });
 }
 
+// New endpoint to get the highest ID
+app.get('/api/getHighestId', async (req, res) => {
+  try {
+    const highestIdDocument = await Image.findOne().sort({ tokenId: -1 }).limit(1);
+
+    if (highestIdDocument) {
+      res.status(200).json({ success: true, highestId: highestIdDocument.tokenId });
+    } else {
+      res.status(404).json({ success: false, error: 'No images found' });
+    }
+  } catch (error) {
+    console.error('Error getting highest ID from MongoDB:', error);
+    res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
+  }
+});
+
 // Define an endpoint to save images
 app.post('/api/saveImage', async (req, res) => {
   const { tokenId, image } = req.body;
