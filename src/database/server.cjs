@@ -30,6 +30,20 @@ try {
   });
 }
 
+// Declaring the User Schema
+const modelUser = 'User'
+let User;
+
+try {
+  User = mongoose.model(modelUser)
+} catch (error) {
+  User = mongoose.model(modelUser, {
+    _id: mongoose.Schema.Types.ObjectId,
+    accountId: Number,
+    image: String,
+  })
+}
+
 // New endpoint to get the highest ID
 app.get('/api/getHighestId', async (req, res) => {
   try {
@@ -87,6 +101,46 @@ app.get('/api/getImages/:tokenId?', async (req, res) => {
     }
   } catch (error) {
     console.error('Error getting image from MongoDB:', error);
+    res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
+  }
+});
+
+// Add new user API
+app.post('/api/addNewUser', async (req, res) => {
+  const { accountId, image } = req.body;
+
+  try {
+    const User = mongoose.model(modelUser);
+
+    const newUser = new User({ _id: new mongoose.Types.ObjectId(), accountId, image });
+    await newUser.save();
+
+    console.log('User added successfully');
+    res.status(200).json({ success: true, id: newUser._id, accountId: newUser.accountId });
+  } catch (error) {
+    console.error('Error adding new user:', error);
+    res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
+  }
+});
+
+// Update user avatar API
+app.put('/api/updateUser/:accountId', async (req, res) => {
+  const { accountId } = req.params;
+  const { image } = req.body;
+
+  try {
+    const User = mongoose.model(modelUser);
+
+    const updatedUser = await User.findOneAndUpdate({ accountId }, { image }, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    console.log('User updated successfully');
+    res.status(200).json({ success: true, id: updatedUser._id });
+  } catch (error) {
+    console.error('Error updating user:', error);
     res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
   }
 });
