@@ -20,18 +20,6 @@ function useAllHoldings() {
     console.log('isLoading: ', isLoading);
     try {
       let parsed: any[] = [];
-      // Using localforage as the storage
-      // if (vaultAllHoldings?.result) {
-      //   for (let item of vaultAllHoldings.result) {
-      //     const itemValue = await localforage.getItem(`key${item}`);
-      //     if (itemValue !== null && typeof itemValue === 'string') {
-      //       const parsedItem = JSON.parse(itemValue);
-      //       if (Object.keys(parsedItem).length !== 0) {
-      //         parsed.push(parsedItem);
-      //       }
-      //     }
-      //   }
-      // }
 
       // Using MongoDB Atlas
       if (vaultAllHoldings) {
