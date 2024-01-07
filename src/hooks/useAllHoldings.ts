@@ -20,15 +20,27 @@ function useAllHoldings() {
     console.log('isLoading: ', isLoading);
     try {
       let parsed: any[] = [];
+      // Using localforage as the storage
+      // if (vaultAllHoldings?.result) {
+      //   for (let item of vaultAllHoldings.result) {
+      //     const itemValue = await localforage.getItem(`key${item}`);
+      //     if (itemValue !== null && typeof itemValue === 'string') {
+      //       const parsedItem = JSON.parse(itemValue);
+      //       if (Object.keys(parsedItem).length !== 0) {
+      //         parsed.push(parsedItem);
+      //       }
+      //     }
+      //   }
+      // }
+
+      // Using MongoDB Atlas
       if (vaultAllHoldings) {
-        console.log('vaultAllHoldings: ', vaultAllHoldings);
-        for (let item of vaultAllHoldings) {
-          const itemValue = await localforage.getItem(`key${item}`);
-          if (itemValue !== null && typeof itemValue === 'string') {
-            const parsedItem = JSON.parse(itemValue);
-            if (Object.keys(parsedItem).length !== 0) {
-              parsed.push(parsedItem);
-            }
+        for (let tokenId of vaultAllHoldings) {
+          // Fetch image data from the server based on tokenId
+          const response = await fetch(`http://localhost:3001/api/getImages/${tokenId}`);
+          if (response.ok) {
+            const imageData = await response.json();
+            parsed.push({ id: tokenId, image: imageData.image });
           }
         }
       }
