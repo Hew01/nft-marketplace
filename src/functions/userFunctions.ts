@@ -1,4 +1,4 @@
-export async function addNewUser(accountId: number, image: string): Promise<void> {
+export async function addNewUser(accountId: number, image: string) {
   try {
     const response = await fetch('http://localhost:3001/api/addNewUser', {
       method: 'POST',
@@ -25,7 +25,7 @@ export async function addNewUser(accountId: number, image: string): Promise<void
   }
 }
 
-export async function updateUser(accountId: number, image: string): Promise<void> {
+export async function updateUser(accountId: number, image: string) {
   try {
     const response = await fetch(`http://localhost:3001/api/updateUser/${accountId}`, {
       method: 'PUT',
