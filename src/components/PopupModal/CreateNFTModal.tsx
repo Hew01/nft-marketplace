@@ -33,37 +33,86 @@ export const CreateNftModal = () => {
     };
 
     //Setup Contract
-    const [tokenId, setTokenId] = useState<number | null>(null);
+    // const [tokenId, setTokenId] = useState<number | null>(null);
     const { address } = useAccount();
-    useEffect(() => {
-        if (imgData !== null) {
-            const fileName = (imgData.name as string);
-            let start = fileName.lastIndexOf('_') + 1;
-            let end = fileName.lastIndexOf('.');
-            const baseName = fileName.substring(start, end);
-            setTokenId(parseInt(baseName));
-        }
-    }, [imgData]);
+    // useEffect(() => {
+    //     if (imgData !== null) {
+    //         const fileName = (imgData.name as string);
+    //         let start = fileName.lastIndexOf('_') + 1;
+    //         let end = fileName.lastIndexOf('.');
+    //         const baseName = fileName.substring(start, end);
+    //         setTokenId(parseInt(baseName));
+    //     }
+    // }, [imgData]);
 
-    const handleCreate = async () => {
-        console.log(imgData)
-        let value = {
-            image: image,
-            id: tokenId,
-        }
-        let jsonValue = JSON.stringify(value);
-        await
-            localforage.setItem(`key${tokenId}`, jsonValue)
+    // const handleCreate = async () => {
+    //     console.log(imgData)
+    //     let value = {
+    //         image: image,
+    //         id: tokenId,
+    //     }
+    //     let jsonValue = JSON.stringify(value);
+    //     await
+    //         localforage.setItem(`key${tokenId}`, jsonValue)
 
-        var storedValue = await localforage.getItem(`key${tokenId}`);
-        if (storedValue === jsonValue) {
-            console.log('Item was successfully set in localForage');
-        } else {
-            console.log('Failed address set item in localForage');
+    //     var storedValue = await localforage.getItem(`key${tokenId}`);
+    //     if (storedValue === jsonValue) {
+    //         console.log('Item was successfully set in localForage');
+    //     } else {
+    //         console.log('Failed address set item in localForage');
+    //     }
+    //     let parsedValue = JSON.parse(jsonValue);
+    //     console.log(parsedValue);
+    // }
+
+    const handleCreateOnDB = async () => {
+        try {
+          // Fetch the document with the highest ID
+          const response = await fetch('http://localhost:3001/api/getHighestId', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          if (!response.ok) {
+            console.error(`Failed to get the highest ID. Server responded with status ${response.status}`);
+          }
+      
+          const highestIdData = await response.json();
+          let highestId = 1;
+      
+          if (highestIdData.success) {
+            highestId = highestIdData.highestId + 1;
+          }
+      
+          // Use the highest ID for the new document
+          const responseSaveImage = await fetch('http://localhost:3001/api/saveImage', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ tokenId: highestId, image: image }),
+          });
+      
+          if (!responseSaveImage.ok) {
+            console.error(`Failed to save image. Server responded with status ${responseSaveImage.status}`);
+            return;
+          }
+      
+          const data = await responseSaveImage.json();
+      
+          if (data.success) {
+            console.log('Image saved successfully!');
+          } else {
+            console.error('Failed to save image:', data.error);
+          }
+    
+        } catch (error: any) {
+          console.error('Error saving image:', error);
+          console.error(error.stack); // Log the stack trace
         }
-        let parsedValue = JSON.parse(jsonValue);
-        console.log(parsedValue);
-    }
+      };
 
     const debouncedTokenId = useDebounce(tokenId, 500)
 

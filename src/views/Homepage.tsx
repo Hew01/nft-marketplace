@@ -12,7 +12,6 @@ export const Homepage = () => {
     const [isAccountAllowed, setIsAccountAllowed] = useState(true);
     const { address } = useAccount();
     const { erc20Allowance } = useReadContractOneArgs(address);
-    console.log('result', erc20Allowance?.result);
 
     useEffect(() => {
         if (erc20Allowance?.result === BigInt(0)) {
