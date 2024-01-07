@@ -1,9 +1,8 @@
 import { useContractReads } from 'wagmi'
 import { ERC721Contract, VaultContract, ERC20Contract } from '@/constants/ContractList'
-import { formatEther } from 'viem'
 
 export function useReadContractOneArgs(param: any) {
-    const { data, isError } = useContractReads({
+    const { data, isError, refetch } = useContractReads({
         contracts: [
             {
                 ...ERC721Contract,
@@ -70,5 +69,6 @@ export function useReadContractOneArgs(param: any) {
         erc20Allowance,
         erc20BalanceOf,
         isError,
+        refetch,
     }
 }

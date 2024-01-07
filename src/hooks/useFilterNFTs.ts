@@ -42,10 +42,10 @@ export const useFilterNFTs = (accountId: string) => {
   }, [accountId]);
 
   useEffect(() => {
-    if (accountId && (newNftEvent === 'Sell' || newNftEvent === 'SellBuy')) {
+    if (accountId && ((newNftEvent === 'Sell') || (newNftEvent === 'SellBuy'))) {
       filterNFTs();
     }
-  }, [filterNFTs, accountId, newNftEvent]);
+  }, [filterNFTs, newNftEvent]);
 
   useEffect(() => {
     if (!isLoading && error === null) {

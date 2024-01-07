@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { BasketIcon, Button, Card, CardBanner, CardTitleContainer, CardMeta, CardPrice, CardProfile, CardTitle, StyledLink, TooltipContainer, TooltipText  } from "./styled"
 import { useReadContractOneArgs } from "@/hooks/useReadContractOneArg";
 import { formatEther } from "viem";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { openModal } from "@/redux/modalSlice";
 import { IoInformationCircleOutline } from "react-icons/io5";
-import { RootState } from "@/redux/store";
+import { useAccount } from "wagmi";
 
 interface BuyTokenProps {
     item: {
@@ -15,15 +15,17 @@ interface BuyTokenProps {
 }
 
 export const ImageCard: React.FC<BuyTokenProps> = ({ item }) => {
-    console.log(item);
     const { vaultGetPrice, vaultGetOwner } = useReadContractOneArgs(item.id);
-    const price = (vaultGetPrice) ? (formatEther(vaultGetPrice?.result)) : ('');
-    const owner = (vaultGetOwner)
-        ? (vaultGetOwner?.result.substring(0, 4) + '...' + vaultGetOwner?.result.slice(-4))
-        : ('NaN');
+    const price = (vaultGetPrice?.result !== undefined) ? formatEther(vaultGetPrice.result) : '';
+    const owner = (vaultGetOwner?.result !== undefined)
+        ? (vaultGetOwner.result.substring(0, 4) + '...' + vaultGetOwner.result.slice(-4))
+        : 'NaN';
 
-    const allowance: bigint = useSelector((state: RootState) => state.global.allowance);
-    const balance: bigint = useSelector((state: RootState) => state.global.balance);
+    const { address } = useAccount();
+    const { erc20Allowance, erc20BalanceOf } = useReadContractOneArgs(address);
+
+    const allowance = erc20Allowance?.result;
+    const balance = erc20BalanceOf?.result;
 
     const dispatch = useDispatch();
     const handleBuy = () => {
@@ -40,14 +42,13 @@ export const ImageCard: React.FC<BuyTokenProps> = ({ item }) => {
     let tooltipText = 'Information about the card';
     let isDisabled = false;
 
-    if (allowance < vaultGetPrice?.result) {
+    if ((vaultGetPrice?.result !== undefined) && (allowance !== undefined) && (allowance < vaultGetPrice.result)) {
         tooltipText = 'Your amount of paying exceed the allowed amount';
         isDisabled = true;
-    } else if (balance < vaultGetPrice?.result) {
+    } else if ((vaultGetPrice?.result !== undefined) && (balance !== undefined) && (balance < vaultGetPrice.result)) {
         tooltipText = "You don't have enough balance to buy this token";
         isDisabled = true;
     }
-
     return (
         <li>
             <Card>

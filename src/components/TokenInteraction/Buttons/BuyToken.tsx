@@ -30,7 +30,7 @@ export const BuyToken: React.FC<TokenInterface> = ({ tokenId, onSuccess }) => {
     if (isSuccess) {
       alert('Transaction was successful!');
       console.log('Transaction detail: ', JSON.stringify(data))
-      dispatch(setNewNftEvent({newNftEvent: 'Buy'}))
+      dispatch(setNewNftEvent({newNftEvent: 'SellBuy'}))
       onSuccess?.();
     }
     if (isError) {

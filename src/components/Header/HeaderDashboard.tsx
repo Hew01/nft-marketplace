@@ -5,8 +5,8 @@ export const HeaderDashboard = () => {
         <StyledHeader>
             <Container>
                 <a href="/">
-                    <LogoSmall src="./src/assets/logo-small.svg" alt="Metalink home" />
-                    <Logo src="./src/assets/logo.svg" alt="Metalink home" />
+                    <LogoSmall src="./src/assets/logo-small.svg" alt="Meowlink home" />
+                    <Logo src="./src/assets/logo.svg" alt="Meowlink home" />
                 </a>
             </Container>
         </StyledHeader>

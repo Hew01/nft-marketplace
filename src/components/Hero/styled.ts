@@ -81,3 +81,36 @@ export const ButtonContent = styled.div`
     max-width: max-content;
     margin: auto;
 `
+
+export const Error = styled.div`
+    color: var(--maximum-red);
+    text-align: center;
+    margin-top: 15px;
+`
+
+export const Button = styled.button`
+    background-color: var(--blue-violet);
+    color: var(--white);
+    cursor: pointer;
+    margin-top: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    font-size: var(--label-md);
+
+    font-size: var(--body-md);
+    font-weight: var(--fw-600);
+    padding: 8px 20px;
+    margin-inline: auto;
+    border-radius: var(--radius-pill);
+    transition: var(--transition-1);
+    &:is(:hover, :focus-visible) {
+        background-color: var(--electric-indigo);
+    }
+    &:disabled {
+        background-color: var(--manatee);
+        cursor: not-allowed;
+    }
+`

@@ -9,9 +9,10 @@ import { setNewNftEvent } from '@/redux/globalSlice';
 interface TokenInterface {
   tokenId: string,
   onSuccess: () => void;
+  setCurrent: (setCurrent: string) => void;
 }
 
-export const ApproveToken: React.FC<TokenInterface> = ({ tokenId, onSuccess }) => {
+export const ApproveToken: React.FC<TokenInterface> = ({ setCurrent, tokenId, onSuccess }) => {
   const dispatch = useDispatch();
   const debouncedTokenId = useDebounce(tokenId, 500);
   const NFTVaultContractAddress = '0xB37f99CAD2B7Dc870A2E4e385cbA1AD2E759Fd50';
@@ -25,18 +26,18 @@ export const ApproveToken: React.FC<TokenInterface> = ({ tokenId, onSuccess }) =
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
-
   useEffect(() => {
-    console.log(isLoading, isSuccess, isError);
+    console.log('isSuccess changed: ', isSuccess);
     if (isSuccess) {
+      setCurrent('Success');
       alert('Transaction was successful!');
       console.log('Transaction detail: ', JSON.stringify(data))
       dispatch(setNewNftEvent({newNftEvent: 'Sell'}))
       onSuccess?.();
     }
-    if (isError)
-    {
-      console.log('error', error)
+    if (isError) {
+      console.log('error called');
+      setCurrent('Current');
     }
   }, [isSuccess, onSuccess]);
 
@@ -44,7 +45,10 @@ export const ApproveToken: React.FC<TokenInterface> = ({ tokenId, onSuccess }) =
     <>
       <Button
         disabled={!write || isLoading}
-        onClick={() => write?.()}>
+        onClick={() => {
+          setCurrent('isLoading');
+          write?.();
+        }}>
         {isLoading ? 'Approving' : 'Approve'}
       </Button>
       {error && (

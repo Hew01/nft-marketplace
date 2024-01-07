@@ -1,40 +1,39 @@
 import { BuyTokenSection } from "@/components/BuyToken/BuyTokenSection"
 import { Header } from "@/components/Header/Header"
+import { HeroApproval } from "@/components/Hero/HeroApproval"
 import { Hero } from "@/components/Hero/HeroContent"
 import ModalRoot from "@/components/PopupModal/ModalRoot"
 import { SellTokenSection } from "@/components/SellToken/SellTokenSection"
 import { useReadContractOneArgs } from "@/hooks/useReadContractOneArg"
-import { setAllowance, setBalanceOf } from "@/redux/globalSlice"
-import { useEffect } from "react"
-import { useDispatch } from "react-redux"
+import { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 
 export const Homepage = () => {
-    const dispatch = useDispatch();
+    const [isAccountAllowed, setIsAccountAllowed] = useState(true);
     const { address } = useAccount();
     const { erc20Allowance } = useReadContractOneArgs(address);
-    const { erc20BalanceOf } = useReadContractOneArgs(address);
+    console.log('result', erc20Allowance?.result);
 
     useEffect(() => {
-        if (erc20Allowance?.result !== undefined) {
-            dispatch(setAllowance({ allowance: (erc20Allowance?.result).toString() }));
+        if (erc20Allowance?.result === BigInt(0)) {
+            setIsAccountAllowed(false);
         }
-    }, [dispatch, erc20Allowance?.result]);
-    
-    useEffect(() => {
-        if (erc20BalanceOf?.result !== undefined) {
-            dispatch(setBalanceOf({ balance: erc20BalanceOf?.result.toString() }));
-        }
-    }, [dispatch, erc20BalanceOf?.result]);
+    }, [erc20Allowance]);
 
-    
     return (
         <>
             <Header />
-            <Hero />
-            <SellTokenSection />
-            <BuyTokenSection />
-            <ModalRoot />
+            {isAccountAllowed ? (
+                <>
+                    <Hero />
+                    <SellTokenSection />
+                    <BuyTokenSection />
+                    <ModalRoot />
+                </>) : (
+                <>
+                    <HeroApproval setIsAccountApproved={setIsAccountAllowed} />
+                </>
+            )}
         </>
     )
 }

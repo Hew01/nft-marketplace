@@ -2,22 +2,25 @@ import { useState, useEffect } from 'react';
 import { Container, HeaderAction, IonWallet, Logo, LogoSmall, NavToggleBtn, Navbar, NavbarLink, NavbarList, StyledHeader, WalletButton } from "./styled";
 import { IoMenuOutline, IoCloseOutline } from "react-icons/io5";
 import { useAccount } from 'wagmi';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { openModal } from '@/redux/modalSlice';
 import { useReadContractOneArgs } from '@/hooks/useReadContractOneArg';
-import { formatEther, parseEther } from 'viem';
-import { RootState } from '@/redux/store';
+import { formatEther } from 'viem';
 
 export const Header = () => {
   const [isActive, setIsActive] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { address: account, isConnected } = useAccount();
+  const { erc20BalanceOf } = useReadContractOneArgs(account);
 
   if (isConnected) {
-    const balanceOf: bigint = useSelector((state: RootState) => state.global.balance);
-    const balance = balanceOf ? (
-      Math.round(formatEther(balanceOf))) : ('');
-
+    let balanceOf;
+    if (erc20BalanceOf?.result !== undefined) {
+      balanceOf = formatEther(erc20BalanceOf.result);
+    } else {
+      balanceOf = '';
+    }
+    const balance = (Math.round(parseFloat(balanceOf) * 1e4) / 1e4).toString();
     const dispatch = useDispatch();
 
     const handleToggle = () => {
@@ -50,8 +53,8 @@ export const Header = () => {
       <StyledHeader className={isScrolled ? "active" : ""}>
         <Container>
           <a href="#">
-            <LogoSmall src="./src/assets/logo-small.svg" alt="Metalink home" />
-            <Logo src="./src/assets/logo.svg" alt="Metalink home" />
+            <LogoSmall src="./src/assets/logo-small.svg" alt="Meowlink home" />
+            <Logo src="./src/assets/logo.svg" alt="Meowlink home" />
           </a>
           <Navbar className={isActive ? "active" : ""}>
             <NavbarList>
@@ -63,7 +66,9 @@ export const Header = () => {
             <NavbarLink>Balance: {balance} BCO</NavbarLink>
             <WalletButton onClick={handleDisconnect}>
               <IonWallet />
-              <span style={{ marginLeft: '10px' }}>{account.substring(0, 4)}...{account.slice(-4)}</span>
+              <span style={{ marginLeft: '10px' }}>
+                {account ? `${account.substring(0, 4)}...${account.slice(-4)}` : 'Account not defined'}
+              </span>
             </WalletButton>
             <NavToggleBtn onClick={handleToggle}>
               {isActive ? <IoCloseOutline /> : <IoMenuOutline />}

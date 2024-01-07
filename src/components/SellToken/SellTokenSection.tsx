@@ -4,7 +4,7 @@ import { ImageCard } from "./ImageCard/ImageCard"
 import { useEffect, useRef, useState } from "react";
 import { useFilterNFTs } from "@/hooks/useFilterNFTs";
 import { useAccount } from "wagmi";
-import { LoaderGif } from "../LoaderGif";
+import { LoaderGif } from "../Loader/LoaderGif";
 
 export const SellTokenSection = () => {
     
@@ -59,7 +59,7 @@ export const SellTokenSection = () => {
                     <TitleWrapper>
                         <SectionTitle>Sell your Tokens</SectionTitle>
                         <ButtonLink>
-                            <span className="span">See More</span>
+                            <span className="span">View All Tokens</span>
                             <IoArrowForward />
                         </ButtonLink>
                     </TitleWrapper>
