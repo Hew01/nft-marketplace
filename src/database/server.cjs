@@ -39,7 +39,8 @@ try {
 } catch (error) {
   User = mongoose.model(modelUser, {
     _id: mongoose.Schema.Types.ObjectId,
-    accountId: Number,
+    accountId: String,
+    displayName: String,
     image: String,
   })
 }
@@ -80,6 +81,7 @@ app.post('/api/saveImage', async (req, res) => {
   }
 });
 
+// Grab all images or the image with the tokenId
 app.get('/api/getImages/:tokenId?', async (req, res) => {
   try {
     const Image = mongoose.model(modelName);
@@ -107,18 +109,39 @@ app.get('/api/getImages/:tokenId?', async (req, res) => {
 
 // Add new user API
 app.post('/api/addNewUser', async (req, res) => {
-  const { accountId, image } = req.body;
+  const { accountId, displayName, image } = req.body;
 
   try {
     const User = mongoose.model(modelUser);
 
-    const newUser = new User({ _id: new mongoose.Types.ObjectId(), accountId, image });
+    const newUser = new User({ _id: new mongoose.Types.ObjectId(), accountId, displayName, image });
     await newUser.save();
 
     console.log('User added successfully');
-    res.status(200).json({ success: true, id: newUser._id, accountId: newUser.accountId });
+    res.status(200).json({ success: true, id: newUser._id, accountId: newUser.accountId, displayName: newUser.displayName });
   } catch (error) {
     console.error('Error adding new user:', error);
+    res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
+  }
+});
+
+// Check if the user exists on the database
+app.get('/api/checkAccount/:accountId', async (req, res) => {
+  const { accountId } = req.params;
+
+  try {
+    const User = mongoose.model(modelUser);
+    const user = await User.findOne({ accountId });
+
+    if (user) {
+      console.log('Account exists in the database');
+      res.status(200).json({ success: true });
+    } else {
+      console.log('Account does not exist in the database');
+      res.status(404).json({ success: false });
+    }
+  } catch (error) {
+    console.error('Error checking account:', error);
     res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
   }
 });
@@ -126,12 +149,12 @@ app.post('/api/addNewUser', async (req, res) => {
 // Update user avatar API
 app.put('/api/updateUser/:accountId', async (req, res) => {
   const { accountId } = req.params;
-  const { image } = req.body;
+  const { displayName, image } = req.body;
 
   try {
     const User = mongoose.model(modelUser);
 
-    const updatedUser = await User.findOneAndUpdate({ accountId }, { image }, { new: true });
+    const updatedUser = await User.findOneAndUpdate({ accountId }, { displayName, image }, { new: true });
 
     if (!updatedUser) {
       return res.status(404).json({ success: false, error: 'User not found' });
@@ -141,6 +164,28 @@ app.put('/api/updateUser/:accountId', async (req, res) => {
     res.status(200).json({ success: true, id: updatedUser._id });
   } catch (error) {
     console.error('Error updating user:', error);
+    res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
+  }
+});
+
+// Grab all the info of the user on the database
+app.get('/api/getUser/:accountId', async (req, res) => {
+  const { accountId } = req.params;
+
+  try {
+    const User = mongoose.model(modelUser);
+    const user = await User.findOne({ accountId });
+
+    if (user) {
+      const { displayName, image } = user;
+      console.log('User found in the database');
+      res.status(200).json({ success: true, accountId, displayName, image });
+    } else {
+      console.log('User not found in the database');
+      res.status(404).json({ success: false });
+    }
+  } catch (error) {
+    console.error('Error retrieving user:', error);
     res.status(500).json({ success: false, error: `Internal Server Error: ${error.message}` });
   }
 });
