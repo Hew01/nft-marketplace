@@ -4,12 +4,20 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { ButtonContent, Container, ExploreBtn, SectionText, SpecialSpan, StyledHero, Title } from "./styled";
+import { addNewUser } from "@/functions/addNewUser";
+import { checkUserExists } from "@/functions/checkUserExists";
+import { DefaultImage } from "@/constants/DefaultImage";
 
 export const HeroDashboard = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const {imageBase64: baseAvatar} = DefaultImage();
     const { address, isConnected } = useAccount({
-        onConnect() {
+        async onConnect() {
+            const userExists = await checkUserExists(address);
+            if (!userExists) {
+                addNewUser(address, address as any, baseAvatar);
+            }
             navigate(AppRouters.HOME);
         },
         onDisconnect() {

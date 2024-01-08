@@ -1,11 +1,11 @@
-export async function addNewUser(accountId: number, image: string) {
+export async function addNewUser(accountId: `0x${string}` | undefined, displayName: string, image: string) {
   try {
     const response = await fetch('http://localhost:3001/api/addNewUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ accountId, image }),
+      body: JSON.stringify({ accountId, displayName, image }),
     });
 
     if (!response.ok) {
@@ -21,7 +21,5 @@ export async function addNewUser(accountId: number, image: string) {
     }
   } catch (error) {
     console.error('Error adding new user:', error);
-    throw error;
   }
 }
-

@@ -1,6 +1,6 @@
 
 import { useAccount, useConnect } from 'wagmi'
-import { CloseButton, DimBackground, ModalContent, Title, WalletButton } from './styled';
+import { CloseButton, DimBackground, ModalContent, Title, UpdateButton } from './styled';
 import { IoCloseOutline } from 'react-icons/io5';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -31,7 +31,7 @@ export const DisplayWallets: React.FC<NftModalProps> = ({}) => {
                     <IoCloseOutline />
                 </CloseButton>
                 {connectors.map((connector: any) => (
-                    <WalletButton
+                    <UpdateButton
                         disabled={!connector.ready}
                         key={connector.id}
                         onClick={() => connect({connector})}
@@ -41,7 +41,7 @@ export const DisplayWallets: React.FC<NftModalProps> = ({}) => {
                         {isLoading &&
                             connector.id === pendingConnector?.id &&
                             ' (connecting)'}
-                    </WalletButton>
+                    </UpdateButton>
                 ))}
 
                 {error && <div>{error.message}</div>}

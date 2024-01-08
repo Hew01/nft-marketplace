@@ -16,7 +16,7 @@ export const Homepage = () => {
     useEffect(() => {
         if (erc20Allowance?.result === BigInt(0)) {
             setIsAccountAllowed(false);
-        }
+        } else setIsAccountAllowed(true);
     }, [erc20Allowance]);
 
     return (

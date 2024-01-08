@@ -95,9 +95,16 @@ export const CardHolder = styled.div`
     }
 `
 
-export const WalletButton = styled.button`
+export const UpdateButton = styled.button`
     border-radius: 15px;
     background-color: var(--blue-violet);
+    width: 100%;
+    margin: 10px 0;
+`
+
+export const DisconnectButton = styled.button`
+    border-radius: 15px;
+    background-color: var(--maximum-red);
     width: 100%;
     margin: 10px 0;
 `
