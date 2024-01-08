@@ -16,6 +16,7 @@ export const HeroDashboard = () => {
             navigate(AppRouters.DASHBOARD);
         }
     });
+    console.log('isConnected', isConnected);
     const handleConnect = () => {
         dispatch(openModal({
             modalType: 'DISPLAY_WALLET',
