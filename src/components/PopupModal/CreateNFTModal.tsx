@@ -94,14 +94,17 @@ export const CreateNftModal = () => {
               <Form>
                 <Form.Group controlId="formFile" className="mb-3">
                   <Form.Control type="file"
-                    onChange={handleFileChange} />
+                    onChange={(e) => {
+                      handleFileChange(e as React.ChangeEvent<HTMLInputElement>);
+                      handleCreate();
+                    }} />
                 </Form.Group>
                 <Button disabled={!write || isLoading}
                   onClick={(e) => {
                     e.preventDefault()
                     setCurrent('isLoading');
                     toastId = toast.loading("Creating...");
-                    handleCreate();
+                    
                     write?.();
                     saveImage(tokenId, image);
                   }}>

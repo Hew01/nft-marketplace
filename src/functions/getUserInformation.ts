@@ -19,8 +19,8 @@ export async function getUserInformation(accountId: `0x${string}` | undefined) {
   
       const data = await response.json();
   
-      if (data.success && data.user) {
-        const { accountId, displayName, image } = data.user;
+      if (data.success) {
+        const { accountId, displayName, image } = data;
         return { accountId, displayName, image } as UserInformation;
       } else {
         console.log('Failed to get user.');

@@ -40,7 +40,7 @@ export const ConfirmDisconnectModal = () => {
         };
         fetchUserInformation();
     }, [address]);
-    
+
 
     const handleDisconnect = () => {
         disconnect();
@@ -49,10 +49,10 @@ export const ConfirmDisconnectModal = () => {
 
     const handleUpdate = (
         account: `0x${string}` | undefined,
-        image: string | ArrayBuffer | null, 
+        image: string | ArrayBuffer | null,
         displayName: string) => {
-            updateUser(account, displayName, image);
-            dispatch(closeModal());
+        updateUser(account, displayName, image);
+        dispatch(closeModal());
     }
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export const ConfirmDisconnectModal = () => {
 
     return (
         <DimBackground>
-            <ModalContent>
+            <ModalContent style={{ gap: '20px', maxWidth: '500px' }}>
                 <Title>User info</Title>
                 <CloseButton onClick={() => (dispatch(closeModal()))}><IoCloseOutline /></CloseButton>
                 <CardHolder>
@@ -71,18 +71,20 @@ export const ConfirmDisconnectModal = () => {
                         alt="preview" className="img-cover" />}
                 </CardHolder>
                 <Form>
-                    <Form.Group controlId="formText" className="mb-3">
+                    <Form.Group controlId="formText" style={{ marginBottom: '10px' }}>
                         <Form.Label>Display name</Form.Label>
-                        <Form.Control type="text" 
+                        <Form.Control type="text"
+                            style={{ marginTop: '5px', border: '1px solid white', borderRadius: '5px' }}
                             placeholder=''
                             onChange={(e) => {
                                 e.preventDefault();
                                 setName(e.target.value);
                             }} />
                     </Form.Group>
-                    <Form.Group controlId="formFile" className="mb-3">
+                    <Form.Group controlId="formFile" style={{ marginBottom: '10px' }}>
                         <Form.Label>Image display</Form.Label>
                         <Form.Control type="file"
+                            style={{ marginTop: '5px', border: '1px solid white', borderRadius: '5px' }}
                             onChange={handleFileChange} />
                     </Form.Group>
                 </Form>

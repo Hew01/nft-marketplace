@@ -27,7 +27,6 @@ export const ImageCard: React.FC<BuyTokenProps> = ({ item }) => {
     useEffect(() => {
         const getUserInfo = async () => {
             const result = await getUserInformation(owner);
-            console.log('result', result);
             if (result) {
                 const { image, displayName } = result;
                 setImage(image);
@@ -83,7 +82,7 @@ export const ImageCard: React.FC<BuyTokenProps> = ({ item }) => {
                     </Button>
                 </CardBanner>
                 <CardProfile>
-                    <img src={image} width="32" height="32" loading="lazy" alt="StreetBoy profile"
+                    <img src={image as string} width="32" height="32" loading="lazy" alt="StreetBoy profile"
                         className="img" />
                     <StyledLink>@{displayName}</StyledLink>
                     {/* <img src="./src/assets/images/avatar-8.jpg" width="32" height="32" loading="lazy" alt="StreetBoy profile"

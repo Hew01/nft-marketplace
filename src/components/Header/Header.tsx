@@ -56,12 +56,12 @@ export const Header = () => {
             <LogoSmall src="./src/assets/logo-small.svg" alt="Meowlink home" />
             <Logo src="./src/assets/logo.svg" alt="Meowlink home" />
           </a>
-          <Navbar className={isActive ? "active" : ""}>
+          {/* <Navbar className={isActive ? "active" : ""}>
             <NavbarList>
               <li><NavbarLink href="#">Explore</NavbarLink></li>
               <li><NavbarLink href="#">Your Wallet</NavbarLink></li>
             </NavbarList>
-          </Navbar>
+          </Navbar> */}
           <HeaderAction>
             <NavbarLink>Balance: {balance} BCO</NavbarLink>
             <WalletButton onClick={handleDisconnect}>

@@ -22,7 +22,7 @@ export const Hero = () => {
                 </SectionText>
                 <ButtonContent>
                     <ExploreBtn onClick={handleCreateNFT}>Create your NFT</ExploreBtn>
-                    <button>Explore more</button>
+                    {/* <button>Explore more</button> */}
                 </ButtonContent>
             </Container>
         </StyledHero>
