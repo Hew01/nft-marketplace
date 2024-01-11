@@ -1,32 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useReadContractNoArgs } from './useReadContractNoArgs';
-import localforage from 'localforage';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { setNewNftEvent } from '@/redux/globalSlice';
+import { useReadContractAllHolding } from './useReadContractAllHolding';
 
 function useAllHoldings() {
   const [result, setResult] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { vaultAllHoldings, refetch } = useReadContractNoArgs();
+  const { vaultAllHoldings, refetch } = useReadContractAllHolding();
 
   const dispatch = useDispatch();
   const newNftEvent: string = useSelector((state: RootState) => state.global.newNftEvent);
 
-  const fetchHoldings = useCallback(async () => {
+  const fetchHoldings = useCallback(async (vaultAllHoldings: any) => {
     setIsLoading(true);
     try {
-      refetch();
       let parsed: any[] = [];
-      if (vaultAllHoldings?.result) {
-        for (let item of vaultAllHoldings.result) {
-          const itemValue = await localforage.getItem(`key${item}`);
-          if (itemValue !== null && typeof itemValue === 'string') {
-            const parsedItem = JSON.parse(itemValue);
-            if (Object.keys(parsedItem).length !== 0) {
-              parsed.push(parsedItem);
-            }
+
+      // Using MongoDB Atlas
+      if (vaultAllHoldings) {
+        for (let tokenId of vaultAllHoldings) {
+          // Fetch image data from the server based on tokenId
+          const response = await fetch(`http://localhost:3001/api/getImages/${tokenId}`);
+          if (response.ok) {
+            const imageData = await response.json();
+            parsed.push({ id: tokenId, image: imageData.image });
           }
         }
       }
@@ -38,14 +37,16 @@ function useAllHoldings() {
   }, [vaultAllHoldings, newNftEvent]);
 
   useEffect(() => {
-    if (vaultAllHoldings) {
-      fetchHoldings();
-    }
-  }, [vaultAllHoldings]);
+    fetchHoldings(vaultAllHoldings);
+  }, [])
 
   useEffect(() => {
-    if (newNftEvent === 'Sell' || newNftEvent === 'SellBuy') {
-      fetchHoldings();
+    console.log('new nft event: ', newNftEvent);
+    if ((newNftEvent === 'Buy') || (newNftEvent === 'SellBuy')) {
+      refetch().then((queryResult) => {
+        const newVaultAllHoldings = queryResult.data;
+        fetchHoldings(newVaultAllHoldings);
+      })
     }
   }, [fetchHoldings, newNftEvent]);
 

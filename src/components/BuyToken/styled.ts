@@ -67,3 +67,15 @@ export const StyledLink = styled.a`
     margin-block-start: 60px;
   }
 `
+
+export const SectionText = styled.p`
+    color: var(--white);
+    opacity: 0.7;
+    margin-block: 16px 32px;
+    font-size: var(--body-lg);
+    text-align: center;
+    @media (min-width: 768px) {
+        max-width: 575px;
+        margin-inline: auto;
+    }
+`

@@ -1,32 +1,96 @@
-import { ModalContent, Title, DimBackground, ButtonContent, WalletButton } from './styled';
+import { ModalContent, Title, DimBackground, ButtonContent, CloseButton, DisconnectButton, UpdateButton, CardHolder } from './styled';
 import { useDispatch } from 'react-redux';
 import { closeModal } from '@/redux/modalSlice';
 import { useAccount, useDisconnect } from 'wagmi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppRouters } from '@/constants/AppRoutes';
+import { Form } from 'react-bootstrap';
+import { updateUser } from '@/functions/updateUser';
+import { IoCloseOutline } from 'react-icons/io5';
+import { getUserInformation } from '@/functions/getUserInformation';
 
 export const ConfirmDisconnectModal = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {disconnect} = useDisconnect();
-    const {isConnected} = useAccount();
+    const { disconnect } = useDisconnect();
+    const { address, isConnected } = useAccount();
+
+    const [name, setName] = useState('');
+    const [image, setImage] = useState<string | ArrayBuffer | null>(null);
+    const [imgData, setImgData] = useState<File | null>(null);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setImgData(e.target.files[0]);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result as string);
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    };
+
+    useEffect(() => {
+        const fetchUserInformation = async () => {
+            const userInfo = await getUserInformation(address);
+            if (userInfo) {
+                setName(userInfo.displayName);
+                setImage(userInfo.image);
+            }
+        };
+        fetchUserInformation();
+    }, [address]);
+
+
     const handleDisconnect = () => {
         disconnect();
-        console.log('disconnected?: ',!isConnected);
         navigate(AppRouters.DASHBOARD);
     }
+
+    const handleUpdate = (
+        account: `0x${string}` | undefined,
+        image: string | ArrayBuffer | null,
+        displayName: string) => {
+        updateUser(account, displayName, image);
+        dispatch(closeModal());
+    }
+
     useEffect(() => {
         if (!isConnected) {
             dispatch(closeModal());
         }
-      }, [isConnected]);
+    }, [isConnected]);
+
     return (
         <DimBackground>
-            <ModalContent>
-                <Title>Disconnect your wallet?</Title>
+            <ModalContent style={{ gap: '20px', maxWidth: '500px' }}>
+                <Title>User info</Title>
+                <CloseButton onClick={() => (dispatch(closeModal()))}><IoCloseOutline /></CloseButton>
+                <CardHolder>
+                    {image && <img src={image as string} loading="lazy" width="500" height="500"
+                        alt="preview" className="img-cover" />}
+                </CardHolder>
+                <Form>
+                    <Form.Group controlId="formText" style={{ marginBottom: '10px' }}>
+                        <Form.Label>Display name</Form.Label>
+                        <Form.Control type="text"
+                            style={{ marginTop: '5px', border: '1px solid white', borderRadius: '5px' }}
+                            placeholder=''
+                            onChange={(e) => {
+                                e.preventDefault();
+                                setName(e.target.value);
+                            }} />
+                    </Form.Group>
+                    <Form.Group controlId="formFile" style={{ marginBottom: '10px' }}>
+                        <Form.Label>Image display</Form.Label>
+                        <Form.Control type="file"
+                            style={{ marginTop: '5px', border: '1px solid white', borderRadius: '5px' }}
+                            onChange={handleFileChange} />
+                    </Form.Group>
+                </Form>
                 <ButtonContent>
-                    <WalletButton onClick={handleDisconnect}>Disconnect</WalletButton>
+                    <DisconnectButton onClick={handleDisconnect}>Disconnect</DisconnectButton>
+                    <UpdateButton onClick={() => handleUpdate(address, image, name)}>Update info</UpdateButton>
                     <button onClick={() => dispatch(closeModal())}>Cancel</button>
                 </ButtonContent>
             </ModalContent>

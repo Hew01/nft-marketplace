@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BasketIcon, Button, Card, CardBanner, CardTitleContainer, CardMeta, CardPrice, CardProfile, CardTitle, StyledLink, TooltipContainer, TooltipText  } from "./styled"
 import { useReadContractOneArgs } from "@/hooks/useReadContractOneArg";
 import { formatEther } from "viem";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { openModal } from "@/redux/modalSlice";
 import { IoInformationCircleOutline } from "react-icons/io5";
-import { RootState } from "@/redux/store";
+import { useAccount } from "wagmi";
+import { getUserInformation } from "@/functions/getUserInformation";
 
 interface BuyTokenProps {
     item: {
@@ -15,15 +16,37 @@ interface BuyTokenProps {
 }
 
 export const ImageCard: React.FC<BuyTokenProps> = ({ item }) => {
-    console.log(item);
     const { vaultGetPrice, vaultGetOwner } = useReadContractOneArgs(item.id);
-    const price = (vaultGetPrice) ? (formatEther(vaultGetPrice?.result)) : ('');
-    const owner = (vaultGetOwner)
-        ? (vaultGetOwner?.result.substring(0, 4) + '...' + vaultGetOwner?.result.slice(-4))
-        : ('NaN');
+    const price = (vaultGetPrice?.result !== undefined) ? formatEther(vaultGetPrice.result) : '';
+    const owner: `0x${string}` = vaultGetOwner?.result || `0x000000000000000000000`;
+    //(vaultGetOwner.result.substring(0, 4) + '...' + vaultGetOwner.result.slice(-4))
 
-    const allowance: bigint = useSelector((state: RootState) => state.global.allowance);
-    const balance: bigint = useSelector((state: RootState) => state.global.balance);
+    const [image, setImage] = useState('');
+    const [displayName, setDisplayName] = useState('');
+
+    useEffect(() => {
+        const getUserInfo = async () => {
+            const result = await getUserInformation(owner);
+            if (result) {
+                const { image, displayName } = result;
+                setImage(image);
+                if (/^0x\w+$/.test(displayName)) {
+                    let shortenedDisplayName = displayName.substring(0, 4) + '...' + displayName.slice(-4);
+                    setDisplayName(shortenedDisplayName);
+                } else {
+                    setDisplayName(displayName);
+                }
+                
+            }
+        }
+        getUserInfo();
+    }, [owner]);
+
+    const { address } = useAccount();
+    const { erc20Allowance, erc20BalanceOf } = useReadContractOneArgs(address);
+
+    const allowance = erc20Allowance?.result;
+    const balance = erc20BalanceOf?.result;
 
     const dispatch = useDispatch();
     const handleBuy = () => {
@@ -40,14 +63,13 @@ export const ImageCard: React.FC<BuyTokenProps> = ({ item }) => {
     let tooltipText = 'Information about the card';
     let isDisabled = false;
 
-    if (allowance < vaultGetPrice?.result) {
+    if ((vaultGetPrice?.result !== undefined) && (allowance !== undefined) && (allowance < vaultGetPrice.result)) {
         tooltipText = 'Your amount of paying exceed the allowed amount';
         isDisabled = true;
-    } else if (balance < vaultGetPrice?.result) {
+    } else if ((vaultGetPrice?.result !== undefined) && (balance !== undefined) && (balance < vaultGetPrice.result)) {
         tooltipText = "You don't have enough balance to buy this token";
         isDisabled = true;
     }
-
     return (
         <li>
             <Card>
@@ -60,9 +82,12 @@ export const ImageCard: React.FC<BuyTokenProps> = ({ item }) => {
                     </Button>
                 </CardBanner>
                 <CardProfile>
-                    <img src="./src/assets/images/avatar-8.jpg" width="32" height="32" loading="lazy" alt="StreetBoy profile"
+                    <img src={image as string} width="32" height="32" loading="lazy" alt="StreetBoy profile"
                         className="img" />
-                    <StyledLink>@{owner}</StyledLink>
+                    <StyledLink>@{displayName}</StyledLink>
+                    {/* <img src="./src/assets/images/avatar-8.jpg" width="32" height="32" loading="lazy" alt="StreetBoy profile"
+                        className="img" />
+                    <StyledLink>@{owner}</StyledLink> */}
                 </CardProfile>
                 <CardTitleContainer>
                     <CardTitle>Kitten {item.id}</CardTitle>

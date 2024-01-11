@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Redirect } from './Redirect';
 import { Dashboard } from '@/views/Dashboard';
 import { Homepage } from '@/views/Homepage';
-import { LoaderGif } from '@/components/LoaderGif';
+import { LoaderGif } from '@/components/Loader/LoaderGif';
 import { PrivateRoute } from './PrivateRoute';
 
 export const AppRouter = () => {

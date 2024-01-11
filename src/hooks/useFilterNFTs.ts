@@ -21,12 +21,15 @@ export const useFilterNFTs = (accountId: string) => {
       for (let nft of nftList) {
         if (nft.contract.name === "NFT721") {
           const tokenId = nft.tokenId;
-          const storedValue = JSON.parse((await localForage.getItem(`key${tokenId}`)) || '{}');
-          if (Object.keys(storedValue).length !== 0) {
-            listNfts.push(storedValue)
+          const response = await fetch(`http://localhost:3001/api/getImages/${tokenId}`);
+          if (response.ok) {
+            const imageData = await response.json();
+            listNfts.push({ id: tokenId, image: imageData.image })
           }
         }
       }
+      // Sort the listNfts array based on tokenId
+      listNfts.sort((a, b) => parseInt(a.id) - parseInt(b.id));
       setNfts(listNfts);
     } catch (e: any) {
       setError(e.message);
@@ -42,10 +45,10 @@ export const useFilterNFTs = (accountId: string) => {
   }, [accountId]);
 
   useEffect(() => {
-    if (accountId && (newNftEvent === 'Sell' || newNftEvent === 'SellBuy')) {
+    if (accountId && ((newNftEvent === 'Sell') || (newNftEvent === 'SellBuy'))) {
       filterNFTs();
     }
-  }, [filterNFTs, accountId, newNftEvent]);
+  }, [filterNFTs, newNftEvent]);
 
   useEffect(() => {
     if (!isLoading && error === null) {
