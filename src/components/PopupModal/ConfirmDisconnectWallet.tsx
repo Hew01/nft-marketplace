@@ -64,7 +64,7 @@ export const ConfirmDisconnectModal = () => {
     return (
         <DimBackground>
             <ModalContent style={{ gap: '20px', maxWidth: '500px' }}>
-                <Title>User info</Title>
+                <Title>Wallet info</Title>
                 <CloseButton onClick={() => (dispatch(closeModal()))}><IoCloseOutline /></CloseButton>
                 <CardHolder>
                     {image && <img src={image as string} loading="lazy" width="500" height="500"
